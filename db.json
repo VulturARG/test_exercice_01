@@ -1,25 +1,30 @@
 {
   "0": {
+    "id": 0,
     "type": "DBT",
     "first": 4,
     "second": 26
   },
   "1": {
+    "id": 1,
     "type": "HUM",
     "first": 3,
     "second": 102
   },
   "3": {
+    "id": 3,
     "type": "PRE",
     "first": 38,
     "second": 24
   },
-  "4": {
+  "7": {
+    "id": 7,
     "type": "W_V",
     "first": 68,
     "second": 115
   },
-  "5": {
+  "6": {
+    "id": 6,
     "type": "W_D",
     "first": 1,
     "second": 8
