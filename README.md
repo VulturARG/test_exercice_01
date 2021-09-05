@@ -1,1 +1,1 @@
-# test_exercice_01
+# Weather data collection test
