@@ -17,16 +17,16 @@
     "first": 38,
     "second": 24
   },
-  "7": {
-    "id": 7,
-    "type": "W_V",
-    "first": 68,
-    "second": 115
-  },
   "6": {
     "id": 6,
     "type": "W_D",
     "first": 1,
     "second": 8
+  },
+  "7": {
+    "id": 7,
+    "type": "W_V",
+    "first": 68,
+    "second": 115
   }
 }
