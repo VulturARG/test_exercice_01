@@ -2,7 +2,9 @@
 
 Sensor data should be monitored. To do this, it implemented a monitoring system with IoT-type devices.
 
-The system is made up of a set of devices whose ID, description, display zone (an alphanumeric value) and location are known, formed by latitude and longitude coordinates. Each coordinate will be a real number.
+The system is made up of two main parts. A data collection device and a data processing system. Each data collection device can be connected to a number of sensors such as those described in the table below. The processing system stores the information of each data collection device and the sensors that comprise it. At the same time, it interrogates the different data collection devices from time to time. When the data collection device receives the request, it interrogates all the sensors to collect the data. Communication is through public and / or private ethernet. The data is sent in JSON format.
+
+Each data collection devices have an ID, description, display zone (an alphanumeric value) and location are known, formed by latitude and longitude coordinates. Each coordinate will be a real number.
 
 Each device has a set of associated sensors type. Currently, the devices support a maximum of 256 sensors. Devices can have more than one sensor of the same type working.
 
@@ -16,7 +18,7 @@ Initially the available sensors will be 6, whose technical characteristics are d
 
 Imagine that you are writing a device admin tool. Please complete the following tasks. Use the database schema and API documentation as a reference.
 
-The config file from device is en `conf/conf.csv`. The data sensor from device is in `conf/sensors.csv` 
+The config file from device is en `conf/conf.csv`. The data of each sensor that is connected to the device is in `conf/sensors.csv` 
 
 1. Create a script that will consume data from the HTTP API endpoints described below and output sensor data to **stdout** in [JSON Lines format](https://jsonlines.org/). NOTE: You are **not** expected to create your own server backend. Although the data is mocked, use the provided endpoints as though they serve real data.
 
@@ -25,13 +27,17 @@ The config file from device is en `conf/conf.csv`. The data sensor from device i
     - An additional value, `date_time`, which contain the current date time in ISO 8601 UTC **date time** (i.e. "2021-09-06 17:01:07)
     - An additional value, `sensor_data`, which contain all data load from de sensors:
       Each `sensor_data` line should contain:
-      - id sensor value as key.  
-      - Sensor type, sensor value and sensor unit and sensor status.
-        The sensor value can be a real number between sensor range.
-        The sensor status will be: `OK` if data is between the sensor ranges, `NA` if sensor can't be read, `SE` if there are a sensor error or `OoR` if sensor data is out of range. 
-2. Add a new field named `dew_point`. This is a calculated valued. See formula bellow. You can find the ids of sensor to combinate to make these calculations in `conf/sensor_to_calculate.csv` 
+      - `id` sensor value as key.  
+      - `type`, `value`, `unit` and `status`.
+        The sensor `value` can be a real number between sensor range or `null` if there is any error.
+        The sensor `status` will be: `OK` if data is between the sensor ranges, `NA` if sensor can't be read, `SE` if there are a sensor error or `OoR` if sensor data is out of range. 
+2. Add a new field named `dew_point`. This is a calculated valued. See formula bellow. You can find the ids of sensor to combinate to make these calculations in `conf/sensor_to_calculate.csv`
+
       Each line should contain:
-    - The device data from config file.
+    - `temp_id` the id of the temperature sensor used to calculate it.
+    - `hum_id` the id of temperature sensor used to calculate it.
+    - `value` the real value from calculate or `null` if there is an error in temperature or humidity sensor.
+    - `status` `OK` or `ERROR`
 
 Note: all real number output must be a JSON Number.
 
@@ -61,7 +67,7 @@ The call must be using the base http address plus the number of sensor that you'
 - If `first` or `second`value have a value greater than `255` a `SE` error must be displayed.
 - If `first` and `second`value are `255` a `SE` error must be displayed.
 
-Calculate real sensor data:
+Calculate real value from sensor data:
 `sensor_data = first * 256 + second`
 
 - Temperature is in decimal celsius degree (ºC * 10). Valid range for positive temperature from 0 to 700. Negative temperature valid range from 1001 to 1400.
