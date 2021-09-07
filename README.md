@@ -2,7 +2,7 @@
 
 ## Problems
 
-Go to docs/problems.md to read the test instruction.
+Go to `docs/problems.md` to read the test instruction.
 
 ## Submitting Your Work
 
