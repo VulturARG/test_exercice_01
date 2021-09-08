@@ -32,9 +32,7 @@ The config file from device is en `conf/conf.csv`. The data of each sensor that 
         The sensor `value` can be a real number between sensor range or `null` if there is any error.
         The sensor `status` will be: `OK` if data is between the sensor ranges, `NA` if sensor can't be read, `SE` if there are a sensor error or `OoR` if sensor data is out of range. 
 2. Add a value, `calculated_data`, which contain all calculated data from de sensors. Those are a calculated values. In this exercise only calculate the dew point. See formula bellow. You can find the ids of sensor to combinate to make these calculations in `conf/sensor_to_calculate.csv` 
-      Each line should contain:
-3. Add a new field named ``.  
-
+      
       Each line should contain:
       - `id` int number starting by 1000 as key.  
       - `type`: The type of calculate value. `DEW` in this exercise
