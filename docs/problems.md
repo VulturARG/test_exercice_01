@@ -54,7 +54,7 @@ The call must be using the base http address plus the number of sensor that you'
 
 ##### Example sensor id: 0: https://my-json-server.typicode.com/VulturARG/test_exercice_01/0
 
-### Sensors
+### Sensor
 
 * first (0 to 255 integer)
 * second (0 to 255 integer)
