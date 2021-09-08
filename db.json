@@ -1,32 +1,62 @@
 {
   "0": {
-    "id": 0,
-    "type": "DBT",
     "first": 4,
     "second": 26
   },
   "1": {
-    "id": 1,
-    "type": "HUM",
     "first": 3,
     "second": 102
   },
   "3": {
-    "id": 3,
-    "type": "PRE",
     "first": 38,
     "second": 24
   },
   "6": {
-    "id": 6,
-    "type": "W_D",
     "first": 1,
     "second": 8
   },
   "7": {
-    "id": 7,
-    "type": "W_V",
     "first": 68,
     "second": 115
+  },
+  "10": {
+    "first": 4,
+    "second": 326
+  },
+  "11": {
+    "first": 2,
+    "second": 202
+  },
+  "13": {
+    "first": 35,
+    "second": 24
+  },
+  "14": {
+    "first": 256,
+    "second": 8
+  },
+  "15": {
+    "first": 68,
+    "second": 115
+  },
+  "20": {
+    "first": 255,
+    "second": 255
+  },
+  "21": {
+    "first": 3,
+    "second": 102
+  },
+  "22": {
+    "first": 238,
+    "second": 255
+  },
+  "28": {
+    "first": 1,
+    "second": 18
+  },
+  "29": {
+    "first": 68,
+    "second": 105
   }
 }

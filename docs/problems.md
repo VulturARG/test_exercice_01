@@ -24,20 +24,25 @@ The config file from device is en `conf/conf.csv`. The data of each sensor that 
 
       Each line should contain:
     - The device data from config file.
-    - An additional value, `date_time`, which contain the current date time in ISO 8601 UTC **date time** (i.e. "2021-09-06 17:01:07)
+    - An additional value, `date_time`, which contain the current date time in ISO 8601 UTC **date time** (i.e. "2021-09-06 17:01:07")
     - An additional value, `sensor_data`, which contain all data load from de sensors:
       Each `sensor_data` line should contain:
       - `id` sensor value as key.  
       - `type`, `value`, `unit` and `status`.
         The sensor `value` can be a real number between sensor range or `null` if there is any error.
         The sensor `status` will be: `OK` if data is between the sensor ranges, `NA` if sensor can't be read, `SE` if there are a sensor error or `OoR` if sensor data is out of range. 
-2. Add a new field named `dew_point`. This is a calculated valued. See formula bellow. You can find the ids of sensor to combinate to make these calculations in `conf/sensor_to_calculate.csv`
+2. Add a value, `calculated_data`, which contain all calculated data from de sensors. Those are a calculated values. In this exercise only calculate the dew point. See formula bellow. You can find the ids of sensor to combinate to make these calculations in `conf/sensor_to_calculate.csv` 
+      Each line should contain:
+3. Add a new field named ``.  
 
       Each line should contain:
-    - `temp_id` the id of the temperature sensor used to calculate it.
-    - `hum_id` the id of temperature sensor used to calculate it.
-    - `value` the real value from calculate or `null` if there is an error in temperature or humidity sensor.
-    - `status` `OK` or `ERROR`
+      - `id` int number starting by 1000 as key.  
+      - `type`: The type of calculate value. `DEW` in this exercise
+      - `sensor_1_id` the id of the first sensor used to calculate it.
+      - `sensor_2_id` the id of second sensor used to calculate it.
+      - `value` the real value from calculate or `null` if there is an error in any sensor.
+      - `unit` the unit of calculated data
+      - `status` `OK` or `ERROR`
 
 Note: all real number output must be a JSON Number.
 
@@ -119,4 +124,57 @@ Dew point (Pr) simplificate method is:
 Where:
 * H is humidity in %.
 * T is temperature in celsius degree.
+* Dew point unit is `ºC`
+
+### Output examples
+
+```json
+{
+    "status":"OK",
+    "message":{
+        "id":"125",
+        "description":"Blue Valley",
+        "lat":-39.157022213874725,
+        "long":-66.79017668889016,
+        "date_time":"2021-09-06 17:01:07",
+        "sensor_data":{
+            "0":{
+                "type":"DBT",
+                "value":27.3,
+                "unit":"ºC",
+                "status":"OK"
+            },
+            "1":{
+                "type":"HUM",
+                "value":57.7,
+                "unit":"%",
+                "status":"OK"
+            },
+            "2":{
+                "type":"PRE",
+                "value":null,
+                "unit":"hPa",
+                "status":"SE"
+            }
+        },
+        "calculated_data" :{
+            "1000" :{
+                "type:":"DEW",
+                "sensor_1_id":0,
+                "sensor_2_id":1,
+                "value":13.2,
+                "unit":"ºC",
+                "status":"OK"
+            }
+        }
+    }
+}
+```
+
+```json
+{
+    "status": "ERROR",
+    "message": null
+}
+```
 
