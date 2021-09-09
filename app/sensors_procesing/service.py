@@ -37,8 +37,7 @@ class SensorsProcessingService:
         for sensor_raw_data in sensors_raw_data:
             sensor = factory.create_instance(sensor_raw_data)
             if sensor is None:
-                # Raise exception
-                pass
+                raise Exception
             processed_sensors_data.append(sensor.get_processed_data())
         return processed_sensors_data
 
