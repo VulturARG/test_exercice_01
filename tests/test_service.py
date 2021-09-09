@@ -10,10 +10,7 @@ from app.sensors_procesing.service import SensorsProcessingService
 
 class TestSensorsProcessing(unittest.TestCase):
     def setUp(self):
-        self._config_sensor_0 = ConfigSensor(
-            id=0,
-            type="DBT"
-        )
+        self._config_sensor_0 = ConfigSensor(id=0, type="DBT")
         self._raw_data_none = RawSensorData(
             id=0,
             type="DBT",
@@ -21,26 +18,41 @@ class TestSensorsProcessing(unittest.TestCase):
             second_raw_value=None,
         )
 
-        self._raw_data_positive_temp = RawSensorData(
+        self._r_d_positive_temp = RawSensorData(
             id=0,
             type="DBT",
             first_raw_value=1,
             second_raw_value=4,
         )
 
-    def test_sensor_input(self):
-        expected = [
-            ProcessedSensorData(
-                id=0,
-                type="DBT",
-                value=26,
-                unit="ºC",
-                status="OK"
-            )
-        ]
-        test_cases = [
-            ([self._config_sensor_0], [self._raw_data_positive_temp], [], expected, "DBT Sensor 26ºC"),
+        self._r_d_negative_temp = RawSensorData(
+            id=0,
+            type="DBT",
+            first_raw_value=4,
+            second_raw_value=30,
+        )
+        self._r_d_out_range = RawSensorData(
+            id=0,
+            type="DBT",
+            first_raw_value=456,
+            second_raw_value=30,
+        )
+        self._r_d_error_message = RawSensorData(
+            id=0,
+            type="DBT",
+            first_raw_value=255,
+            second_raw_value=255,
+        )
 
+    def test_sensor_input(self):
+        expected_pos = [ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK")]
+        expected_neg = [ProcessedSensorData(id=0, type="DBT", value=-5.4, unit="ºC", status="OK")]
+        expected_se = [ProcessedSensorData(id=0, type="DBT", value=None, unit="ºC", status="SE")]
+        test_cases = [
+            ([self._config_sensor_0], [self._r_d_positive_temp], [], expected_pos, "DBT 26ºC"),
+            ([self._config_sensor_0], [self._r_d_negative_temp], [], expected_neg, "DBT -5.4ºC"),
+            ([self._config_sensor_0], [self._r_d_out_range], [], expected_se, "Sensor Data Not Integrity"),
+            ([self._config_sensor_0], [self._r_d_error_message], [], expected_se, "Sensor Error Message"),
         ]
 
         sensor_config_repository = Mock(spec=SensorsConfigRepository)

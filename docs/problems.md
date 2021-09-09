@@ -86,15 +86,15 @@ Example 1. Temp = 26ºC:
 
 Example 2. Temp = -5ºC:
 * `first = 4`
-* `second = 26`
-* `sensor_data = 4 * 256 + 26`
-* `sensor_data = 1050 = -5ºC`
+* `second = 30`
+* `sensor_data = 4 * 256 + 30`
+* `sensor_data = 1054 = -5.4ºC`
 
 Example 3. Humidity = 84%:
 * `first = 3`
-* `second = 72`
-* `sensor_data = 3 * 256 + 72`
-* `sensor_data = 840 = 84%`
+* `second = 75`
+* `sensor_data = 3 * 256 + 75`
+* `sensor_data = 840 = 84.3%`
 
 Example 4. Pressure = 970.7 hPa:
 * `first = 37`

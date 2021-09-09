@@ -21,7 +21,7 @@ class RawSensorData:
 class ProcessedSensorData:
     id: int
     type: str
-    value: float
+    value: Optional[float]
     unit: str
     status: str
 
@@ -31,7 +31,7 @@ class CalculatedData:
     type: str
     sensor_1_id: int
     sensor_2_id: int
-    value: float
+    value: Optional[float]
     unit: str
     status: str
 
