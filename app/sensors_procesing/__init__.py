@@ -46,6 +46,13 @@ class SensorSpecs(enum.Enum):
         "WBT": {"min": -40, "max": 70, "unit": "ºC"},
         "HUM": {"min": 0, "max": 100, "unit": "%"},
         "PRE": {"min": 300, "max": 1100, "unit": "hPa"},
-        "W_V": {"min": 0, "max": 250, "unit": "kmh"},
-        "W_D": {"min": 0, "max": 359, "unit": "º"}
+        "WiV": {"min": 0, "max": 250, "unit": "kmh"},
+        "WiD": {"min": 0, "max": 359, "unit": "º"}
     }
+
+
+class TypeSensorNotFoundError(Exception):
+    MESSAGE = "This type sensor does not exist"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)

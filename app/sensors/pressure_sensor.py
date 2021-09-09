@@ -14,4 +14,4 @@ class PRE(SensorTypeOne):
     def _get_value(self) -> Optional[float]:
         """Get sensor value from raw data."""
 
-        return (self._raw_data.first_raw_value * 256 + self._raw_data.second_raw_value) / 10
+        return self._do_math() / 10

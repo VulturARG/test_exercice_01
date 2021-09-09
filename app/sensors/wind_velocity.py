@@ -4,8 +4,8 @@ from app.sensors.sensor_type_one import SensorTypeOne
 from app.sensors_procesing import RawSensorData
 
 
-class DBT(SensorTypeOne):
-    """Dry Bulb Temperature sensor."""
+class WiV(SensorTypeOne):
+    """Pressure sensor"""
 
     def __init__(self, raw_data: RawSensorData):
         super().__init__(raw_data)
@@ -14,6 +14,4 @@ class DBT(SensorTypeOne):
     def _get_value(self) -> Optional[float]:
         """Get sensor value from raw data."""
 
-        value = self._do_math()
-        value = -(value - 1000) if value > 1000 else value
-        return value / 10
+        return self._do_math() / 100

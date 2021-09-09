@@ -1,7 +1,7 @@
 from typing import List
 
 from app.sensors.sensor_factory import SensorFactory
-from app.sensors_procesing import ProcessedSensorData, CalculatedData
+from app.sensors_procesing import ProcessedSensorData, CalculatedData, TypeSensorNotFoundError
 from app.sensors_procesing.calculated_config_repository import CalculatedConfigRepository
 from app.sensors_procesing.sensor_config_repository import SensorsConfigRepository
 from app.sensors_procesing.sensor_raw_data_repository import SensorsRawDataRepository
@@ -37,7 +37,7 @@ class SensorsProcessingService:
         for sensor_raw_data in sensors_raw_data:
             sensor = factory.create_instance(sensor_raw_data)
             if sensor is None:
-                raise Exception
+                raise TypeSensorNotFoundError
             processed_sensors_data.append(sensor.get_processed_data())
         return processed_sensors_data
 
