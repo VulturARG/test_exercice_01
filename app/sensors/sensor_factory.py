@@ -1,7 +1,7 @@
 from inspect import getmembers, isclass, isabstract
 import app.sensors as sensors_package
 
-from app.sensors_procesing import RawSensorData
+from app.sensors_procesing import RawSensorData, TypeSensorNotFoundError
 
 
 class SensorFactory:
@@ -10,9 +10,9 @@ class SensorFactory:
     sensors = {}  # key = sensor type, Value = class for the sensor
 
     def __init__(self):
-        self.load_sensors()
+        self._load_sensors()
 
-    def load_sensors(self) -> None:
+    def _load_sensors(self) -> None:
         """Populate the sensors dictionary with classes of sensors package"""
 
         classes = getmembers(
@@ -26,5 +26,8 @@ class SensorFactory:
     def create_instance(self, raw_data: RawSensorData) -> sensors:
         """Create the solicited instance."""
 
-        name = raw_data.type
-        return self.sensors[name](raw_data) if name in self.sensors else None
+        try:
+            return self.sensors[raw_data.type](raw_data)  # if name in self.sensors else None
+        except KeyError:
+            raise TypeSensorNotFoundError
+

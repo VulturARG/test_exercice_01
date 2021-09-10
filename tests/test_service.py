@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock
 
 from app.sensors_procesing import ConfigSensor, RawSensorData, ProcessedSensorData, \
-    TypeSensorNotFoundError
+    TypeSensorNotFoundError, ConfigCalculate, ToCalculateRawData
 from app.sensors_procesing.calculated_config_repository import CalculatedConfigRepository
 from app.sensors_procesing.sensor_config_repository import SensorsConfigRepository
 from app.sensors_procesing.sensor_raw_data_repository import SensorsRawDataRepository
@@ -95,6 +95,10 @@ class TestSensorsProcessing(unittest.TestCase):
         expected_w_v = [ProcessedSensorData(id=3, type="WiV", value=170.73, unit="kmh", status="OK")]
         expected_w_d = [ProcessedSensorData(id=4, type="WiD", value=357, unit="º", status="OK")]
         expected_none = [ProcessedSensorData(id=4, type="DBT", value=None, unit="ºC", status="SE")]
+        expected_duo = [
+            ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK"),
+            ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")
+        ]
 
         test_cases = [
             ([self._config_0], [self._r_d_positive_temp], [], expected_pos, "DBT 26ºC"),
@@ -107,6 +111,13 @@ class TestSensorsProcessing(unittest.TestCase):
             ([self._config_3], [self._r_d_W_V], [], expected_w_v, "Wind Velocity"),
             ([self._config_4], [self._r_d_W_D], [], expected_w_d, "Wind Direction"),
             ([self._config_0], [self._raw_data_none], [], expected_none, "Raw data None"),
+            (
+                [self._config_0, self._config_1],
+                [self._r_d_positive_temp, self._r_d_humidity],
+                [],
+                expected_duo,
+                "Two Sensors"
+            ),
         ]
 
         sensor_config_repository = Mock(spec=SensorsConfigRepository)
@@ -147,6 +158,42 @@ class TestSensorsProcessing(unittest.TestCase):
 
         with self.assertRaises(TypeSensorNotFoundError):
             service.process_sensor_data()
+
+    def test_calculated_value(self):
+        expected = [ProcessedSensorData(id=1000, type="DEW", value=23.1, unit="ºC", status="OK")]
+
+        test_cases = [
+            (
+                [self._config_0, self._config_1],
+                [self._r_d_positive_temp, self._r_d_humidity],
+                [ConfigCalculate(id=1000, type="DEW", sensor_1=0, sensor_2=1, unit="ºC")],
+                # [ToCalculateRawData(id=1000, type="DEW", sensor_1_value=26, sensor_2_value=84.3)],
+                expected,
+                "Calculate DEW"
+            )
+        ]
+
+        sensor_config_repository = Mock(spec=SensorsConfigRepository)
+        sensor_raw_data_repository = Mock(spec=SensorsRawDataRepository)
+        calculated_data_repository = Mock(spec=CalculatedConfigRepository)
+
+        service = SensorsProcessingService(
+            sensor_config_repository=sensor_config_repository,
+            sensor_raw_data_repository=sensor_raw_data_repository,
+            calculated_config_repo=calculated_data_repository
+        )
+
+        for sensor_config, sensor_raw_data, config_calculated, expected, message in test_cases:
+            # values returned by the repositories
+            sensor_config_repository.get_sensor_config.return_value = sensor_config
+            sensor_raw_data_repository.get_sensor_raw_data.return_value = sensor_raw_data
+            calculated_data_repository.get_calculated_config.return_value = config_calculated
+
+            processed_sensor_data = service.process_sensor_data()
+            actual = service.get_calculated_data(processed_sensor_data)
+
+            with self.subTest(message):
+                self.assertEqual(expected, actual)
 
 
 if __name__ == '__main__':

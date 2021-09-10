@@ -18,6 +18,23 @@ class RawSensorData:
 
 
 @dataclass(frozen=True)
+class ConfigCalculate:
+    id: int
+    type: str
+    sensor_1: int
+    sensor_2: int
+    unit: str
+
+
+@dataclass(frozen=True)
+class ToCalculateRawData:
+    id: int
+    type: str
+    sensor_1_value: Optional[float]
+    sensor_2_value: Optional[float]
+
+
+@dataclass(frozen=True)
 class ProcessedSensorData:
     id: int
     type: str
@@ -70,3 +87,12 @@ class SensorValueOutOfRange(Exception):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
+
+
+class FormulaToCalculateNotFoundError(Exception):
+    MESSAGE = "This formula was not found"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
