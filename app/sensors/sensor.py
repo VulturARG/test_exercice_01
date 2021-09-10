@@ -19,18 +19,15 @@ class Sensor(ABC):
         """Get the data processed from raw data."""
 
     @abstractmethod
-    def _does_the_data_have_integrity(self) -> bool:
+    def _does_the_data_have_integrity(self) -> None:
         """Check if both values are minor than 255."""
 
     @abstractmethod
-    def _is_error_from_sensor(self) -> bool:
+    def _is_error_from_sensor(self) -> None:
         """Check if both values are equal to 255."""
 
     @abstractmethod
-    def _is_value_out_of_range(self, type_sensor: str, value: float) -> bool:
+    def _is_value_out_of_range(self, type_sensor: str, value: float) -> None:
         """Check if the value is within the manufacturer's specifications."""
 
-    @abstractmethod
-    def _is_raw_data_none(self):
-        """Check if the raw data is None."""
 

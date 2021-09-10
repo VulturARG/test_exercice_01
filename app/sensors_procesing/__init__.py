@@ -56,3 +56,17 @@ class TypeSensorNotFoundError(Exception):
 
     def __init__(self) -> None:
         super().__init__(self.MESSAGE)
+
+
+class SensorRawDataError(Exception):
+    MESSAGE = "There are an error in raw data from sensor"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
+class SensorValueOutOfRange(Exception):
+    MESSAGE = "The value from sensor is out of range"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
