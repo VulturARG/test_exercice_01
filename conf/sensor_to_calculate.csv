@@ -1,3 +1,3 @@
-id,type,sensor_1,sensor_2,unit
+id,type,sensor_1_id,sensor_2_id,unit
 1000,"DEW",0,1,"ºC"
 1005,"DEW",10,11,"ºC"

@@ -18,23 +18,6 @@ class RawSensorData:
 
 
 @dataclass(frozen=True)
-class ConfigCalculate:
-    id: int
-    type: str
-    sensor_1: int
-    sensor_2: int
-    unit: str
-
-
-@dataclass(frozen=True)
-class ToCalculateRawData:
-    id: int
-    type: str
-    sensor_1_value: Optional[float]
-    sensor_2_value: Optional[float]
-
-
-@dataclass(frozen=True)
 class ProcessedSensorData:
     id: int
     type: str
@@ -44,12 +27,25 @@ class ProcessedSensorData:
 
 
 @dataclass(frozen=True)
-class CalculatedData:
+class ConfigCalculate:
+    id: int
     type: str
     sensor_1_id: int
     sensor_2_id: int
-    value: Optional[float]
     unit: str
+
+
+@dataclass(frozen=True)
+class ToCalculateRawData:
+    config: ConfigCalculate
+    sensor_1_value: Optional[float]
+    sensor_2_value: Optional[float]
+
+
+@dataclass(frozen=True)
+class CalculatedData:
+    config: ConfigCalculate
+    value: Optional[float]
     status: str
 
 
@@ -96,3 +92,8 @@ class FormulaToCalculateNotFoundError(Exception):
         super().__init__(self.MESSAGE)
 
 
+class SensorValueIsNoneError(Exception):
+    MESSAGE = "The sensor value is none"
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)

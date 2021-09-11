@@ -1,6 +1,7 @@
 from inspect import getmembers, isclass, isabstract
 import app.calculated_values as formulas_package
-from app.sensors_procesing import ToCalculateRawData
+from app.sensors_procesing import ToCalculateRawData, FormulaToCalculateNotFoundError, \
+    SensorValueIsNoneError
 
 
 class CalculateValueFactory:
@@ -22,8 +23,12 @@ class CalculateValueFactory:
             if isclass(_type) and issubclass(_type, formulas_package.CalculateValue):
                 self.calculate_values.update([[name, _type]])
 
-    def create_instance(self, _to_calculate_raw_data: ToCalculateRawData) -> calculate_values:
+    def create_instance(self, to_calculate_raw_data: ToCalculateRawData) -> calculate_values:
         """Create the solicited instance."""
 
-        name = _to_calculate_raw_data.type
-        return self.calculate_values[name](_to_calculate_raw_data) if name in self.calculate_values else None
+        name = to_calculate_raw_data.config.type
+
+        try:
+            return self.calculate_values[name](to_calculate_raw_data)
+        except KeyError:
+            raise FormulaToCalculateNotFoundError

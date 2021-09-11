@@ -27,7 +27,7 @@ class SensorFactory:
         """Create the solicited instance."""
 
         try:
-            return self.sensors[raw_data.type](raw_data)  # if name in self.sensors else None
+            return self.sensors[raw_data.type](raw_data)
         except KeyError:
             raise TypeSensorNotFoundError
 

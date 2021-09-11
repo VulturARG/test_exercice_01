@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Optional
 
 from app.calculated_values.calculate_value_factory import CalculateValueFactory
 from app.sensors.sensor_factory import SensorFactory
-from app.sensors_procesing import ProcessedSensorData, CalculatedData, TypeSensorNotFoundError, \
-    ToCalculateRawData, FormulaToCalculateNotFoundError, ConfigCalculate
+from app.sensors_procesing import ProcessedSensorData, CalculatedData, ToCalculateRawData, \
+    ConfigCalculate, SensorValueIsNoneError
 from app.sensors_procesing.calculated_config_repository import CalculatedConfigRepository
 from app.sensors_procesing.sensor_config_repository import SensorsConfigRepository
 from app.sensors_procesing.sensor_raw_data_repository import SensorsRawDataRepository
@@ -53,10 +53,8 @@ class SensorsProcessingService:
         factory = CalculateValueFactory()
         calculated_data = []
         for raw_data in raw_values_to_calculate:
-            calculated = factory.calculate_values(raw_data)
-            if calculated is None:
-                raise FormulaToCalculateNotFoundError
-            calculated_data.append(calculated)
+            calculated = factory.create_instance(raw_data)
+            calculated_data.append(calculated.get_calculated_value())
         return calculated_data
 
     def _get_raw_data_to_calculate(
@@ -66,5 +64,39 @@ class SensorsProcessingService:
     ) -> List[ToCalculateRawData]:
         """Get the value from sensors."""
 
+        to_calculate_raw_data = []
         for to_calculate in values_to_calculate:
-            for sensor_data in processed_sensors_data
+            try:
+                calculate_raw_date = self._get_calculate_value(processed_sensors_data, to_calculate)
+            except SensorValueIsNoneError:
+                calculate_raw_date = ToCalculateRawData(
+                    config=to_calculate,
+                    sensor_1_value=None,
+                    sensor_2_value=None
+                )
+            to_calculate_raw_data.append(calculate_raw_date)
+        return to_calculate_raw_data
+
+    def _get_calculate_value(self, processed_sensors_data, to_calculate):
+        value_sensor_1: Optional[float] = None
+        value_sensor_2: Optional[float] = None
+        calculate_raw_date: Optional[ToCalculateRawData] = None
+        for sensor_data in processed_sensors_data:
+            if to_calculate.sensor_1_id == sensor_data.id:
+                if sensor_data.status != "OK":
+                    raise SensorValueIsNoneError
+                value_sensor_1 = sensor_data.value
+            if to_calculate.sensor_2_id == sensor_data.id:
+                if sensor_data.status != "OK":
+                    raise SensorValueIsNoneError
+                value_sensor_2 = sensor_data.value
+            if value_sensor_1 is not None and value_sensor_2 is not None:
+                calculate_raw_date = ToCalculateRawData(
+                    config=to_calculate,
+                    sensor_1_value=value_sensor_1,
+                    sensor_2_value=value_sensor_2
+                )
+                break
+        return calculate_raw_date
+
+

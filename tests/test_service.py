@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock
 
 from app.sensors_procesing import ConfigSensor, RawSensorData, ProcessedSensorData, \
-    TypeSensorNotFoundError, ConfigCalculate, ToCalculateRawData
+    TypeSensorNotFoundError, ConfigCalculate, ToCalculateRawData, CalculatedData
 from app.sensors_procesing.calculated_config_repository import CalculatedConfigRepository
 from app.sensors_procesing.sensor_config_repository import SensorsConfigRepository
 from app.sensors_procesing.sensor_raw_data_repository import SensorsRawDataRepository
@@ -55,7 +55,7 @@ class TestSensorsProcessing(unittest.TestCase):
             second_raw_value=75,
         )
         self._value_out_range = RawSensorData(
-            id=100,
+            id=1,
             type="HUM",
             first_raw_value=254,
             second_raw_value=254,
@@ -90,7 +90,7 @@ class TestSensorsProcessing(unittest.TestCase):
         expected_neg = [ProcessedSensorData(id=0, type="DBT", value=-5.4, unit="ºC", status="OK")]
         expected_se = [ProcessedSensorData(id=0, type="DBT", value=None, unit="ºC", status="SE")]
         expected_hum = [ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")]
-        expected_hum2 = [ProcessedSensorData(id=100, type="HUM", value=None, unit="%", status="OoR")]
+        expected_hum2 = [ProcessedSensorData(id=1, type="HUM", value=None, unit="%", status="OoR")]
         expected_pre = [ProcessedSensorData(id=2, type="PRE", value=970.7, unit="hPa", status="OK")]
         expected_w_v = [ProcessedSensorData(id=3, type="WiV", value=170.73, unit="kmh", status="OK")]
         expected_w_d = [ProcessedSensorData(id=4, type="WiD", value=357, unit="º", status="OK")]
@@ -160,16 +160,24 @@ class TestSensorsProcessing(unittest.TestCase):
             service.process_sensor_data()
 
     def test_calculated_value(self):
-        expected = [ProcessedSensorData(id=1000, type="DEW", value=23.1, unit="ºC", status="OK")]
+        config_calculate = ConfigCalculate(id=1000, type="DEW", sensor_1_id=0, sensor_2_id=1, unit="ºC")
+        expected = [CalculatedData(config_calculate, value=23.1, status="OK")]
+        expected_oor = [CalculatedData(config_calculate, value=None, status="ERROR")]
 
         test_cases = [
             (
                 [self._config_0, self._config_1],
                 [self._r_d_positive_temp, self._r_d_humidity],
-                [ConfigCalculate(id=1000, type="DEW", sensor_1=0, sensor_2=1, unit="ºC")],
-                # [ToCalculateRawData(id=1000, type="DEW", sensor_1_value=26, sensor_2_value=84.3)],
+                [config_calculate],
                 expected,
                 "Calculate DEW"
+            ),
+            (
+                [self._config_0, self._config_1],
+                [self._r_d_positive_temp, self._value_out_range],
+                [config_calculate],
+                expected_oor,
+                "HUM Out Range"
             )
         ]
 
