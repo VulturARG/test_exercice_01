@@ -1,21 +1,31 @@
 import unittest
 from unittest.mock import Mock
 
-from app.sensors_procesing import ConfigSensor, RawSensorData, ProcessedSensorData, \
-    TypeSensorNotFoundError, ConfigCalculate, ToCalculateRawData, CalculatedData
-from app.sensors_procesing.calculated_config_repository import CalculatedConfigRepository
-from app.sensors_procesing.sensor_config_repository import SensorsConfigRepository
+from app.calculated_values.calculate_value_factory import CalculateValueFactory
+from app.sensors.sensor_factory import SensorFactory
+from app.sensors_procesing import (
+    SettingsSensor,
+    RawSensorData,
+    ProcessedSensorData,
+    TypeSensorNotFoundError,
+    SettingsCalculate,
+    CalculatedData,
+    SensorSpecs,
+    RawSensorSpecs,
+)
+from app.sensors_procesing.calculated_settings_repository import CalculatedSettingsRepository
+from app.sensors_procesing.sensor_settings_repository import SensorsSettingsRepository
 from app.sensors_procesing.sensor_raw_data_repository import SensorsRawDataRepository
 from app.sensors_procesing.service import SensorsProcessingService
 
 
 class TestSensorsProcessing(unittest.TestCase):
     def setUp(self):
-        self._config_0 = ConfigSensor(id=0, type="DBT")
-        self._config_1 = ConfigSensor(id=1, type="HUM")
-        self._config_2 = ConfigSensor(id=2, type="PRE")
-        self._config_3 = ConfigSensor(id=3, type="WiV")
-        self._config_4 = ConfigSensor(id=4, type="WiD")
+        self._config_0 = SettingsSensor(id=0, type="DBT")
+        self._config_1 = SettingsSensor(id=1, type="HUM")
+        self._config_2 = SettingsSensor(id=2, type="PRE")
+        self._config_3 = SettingsSensor(id=3, type="WiV")
+        self._config_4 = SettingsSensor(id=4, type="WiD")
 
         self._raw_data_none = RawSensorData(
             id=4,
@@ -85,20 +95,64 @@ class TestSensorsProcessing(unittest.TestCase):
             second_raw_value=101,
         )
 
+        self.sensor_factory = SensorFactory()
+        self.calculate_value_factory = CalculateValueFactory()
+
+        self.sensor_specs_repository = SensorSpecs(
+            specs={
+                "DBT": RawSensorSpecs(
+                    type="DBT", min=-40, max=70, unit="ºC",description="Dry Bulb Temperature"
+                ),
+                "WBT": RawSensorSpecs(
+                    type="WBT", min=-40, max=70, unit="ºC", description="Wet Bulb Temperature"
+                ),
+                "HUM": RawSensorSpecs(
+                    type="HUM", min=0, max=100, unit="%", description="Humidity"
+                ),
+                "PRE": RawSensorSpecs(
+                    type="PRE", min=300, max=1100, unit="hPa", description="Pressure"
+                ),
+                "WiV": RawSensorSpecs(
+                    type="WiV", min=0, max=250, unit="kmh", description="Wind Velocity"
+                ),
+                "WiD": RawSensorSpecs(
+                    type="WiD", min=0, max=359, unit="º", description="Wind Direction"
+                ),
+            }
+        )
+
     def test_sensor_input(self):
-        expected_pos = [ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK")]
-        expected_neg = [ProcessedSensorData(id=0, type="DBT", value=-5.4, unit="ºC", status="OK")]
-        expected_se = [ProcessedSensorData(id=0, type="DBT", value=None, unit="ºC", status="SE")]
-        expected_hum = [ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")]
-        expected_hum2 = [ProcessedSensorData(id=1, type="HUM", value=None, unit="%", status="OoR")]
-        expected_pre = [ProcessedSensorData(id=2, type="PRE", value=970.7, unit="hPa", status="OK")]
-        expected_w_v = [ProcessedSensorData(id=3, type="WiV", value=170.73, unit="kmh", status="OK")]
-        expected_w_d = [ProcessedSensorData(id=4, type="WiD", value=357, unit="º", status="OK")]
-        expected_none = [ProcessedSensorData(id=4, type="DBT", value=None, unit="ºC", status="SE")]
-        expected_duo = [
-            ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK"),
-            ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")
-        ]
+        expected_pos = {
+            0: ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK")
+        }
+        expected_neg = {
+            0: ProcessedSensorData(id=0, type="DBT", value=-5.4, unit="ºC", status="OK")
+        }
+        expected_se = {
+            0: ProcessedSensorData(id=0, type="DBT", value=None, unit="ºC", status="SE")
+        }
+        expected_hum = {
+            1: ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")
+        }
+        expected_hum2 = {
+            1: ProcessedSensorData(id=1, type="HUM", value=None, unit="%", status="OoR")
+        }
+        expected_pre = {
+            2: ProcessedSensorData(id=2, type="PRE", value=970.7, unit="hPa", status="OK")
+        }
+        expected_w_v = {
+            3: ProcessedSensorData(id=3, type="WiV", value=170.73, unit="kmh", status="OK")
+        }
+        expected_w_d = {
+            4: ProcessedSensorData(id=4, type="WiD", value=357, unit="º", status="OK")
+        }
+        expected_none = {
+            4: ProcessedSensorData(id=4, type="DBT", value=None, unit="ºC", status="SE")
+        }
+        expected_duo = {
+            0: ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK"),
+            1: ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")
+        }
 
         test_cases = [
             ([self._config_0], [self._r_d_positive_temp], [], expected_pos, "DBT 26ºC"),
@@ -120,21 +174,24 @@ class TestSensorsProcessing(unittest.TestCase):
             ),
         ]
 
-        sensor_config_repository = Mock(spec=SensorsConfigRepository)
+        sensor_config_repository = Mock(spec=SensorsSettingsRepository)
         sensor_raw_data_repository = Mock(spec=SensorsRawDataRepository)
-        calculated_data_repository = Mock(spec=CalculatedConfigRepository)
+        calculated_data_repository = Mock(spec=CalculatedSettingsRepository)
 
         service = SensorsProcessingService(
+            sensor_specs_repository=self.sensor_specs_repository,
             sensor_config_repository=sensor_config_repository,
             sensor_raw_data_repository=sensor_raw_data_repository,
-            calculated_config_repo=calculated_data_repository
+            calculated_config_repo=calculated_data_repository,
+            sensor_factory=self.sensor_factory,
+            calculate_value_factory=self.calculate_value_factory,
         )
 
         for sensor_config, sensor_raw_data, calculated_data, expected, message in test_cases:
             # values returned by the repositories
-            sensor_config_repository.get_sensor_config.return_value = sensor_config
+            sensor_config_repository.get_sensor_settings.return_value = sensor_config
             sensor_raw_data_repository.get_sensor_raw_data.return_value = sensor_raw_data
-            calculated_data_repository.get_calculated_config.return_value = calculated_data
+            calculated_data_repository.get_calculated_settings.return_value = calculated_data
 
             actual = service.process_sensor_data()
 
@@ -142,27 +199,30 @@ class TestSensorsProcessing(unittest.TestCase):
                 self.assertEqual(expected, actual)
 
     def test_type_sensor_doesnt_exit(self):
-        sensor_config_repository = Mock(spec=SensorsConfigRepository)
+        sensor_config_repository = Mock(spec=SensorsSettingsRepository)
         sensor_raw_data_repository = Mock(spec=SensorsRawDataRepository)
-        calculated_data_repository = Mock(spec=CalculatedConfigRepository)
+        calculated_data_repository = Mock(spec=CalculatedSettingsRepository)
 
         service = SensorsProcessingService(
+            sensor_specs_repository=self.sensor_specs_repository,
             sensor_config_repository=sensor_config_repository,
             sensor_raw_data_repository=sensor_raw_data_repository,
-            calculated_config_repo=calculated_data_repository
+            calculated_config_repo=calculated_data_repository,
+            sensor_factory=self.sensor_factory,
+            calculate_value_factory=self.calculate_value_factory,
         )
 
-        sensor_config_repository.get_sensor_config.return_value = [self._config_0]
+        sensor_config_repository.get_sensor_settings.return_value = [self._config_0]
         sensor_raw_data_repository.get_sensor_raw_data.return_value = [self.not_exist]
-        calculated_data_repository.get_calculated_config.return_value = []
+        calculated_data_repository.get_calculated_settings.return_value = []
 
         with self.assertRaises(TypeSensorNotFoundError):
             service.process_sensor_data()
 
     def test_calculated_value(self):
-        config_calculate = ConfigCalculate(id=1000, type="DEW", sensor_1_id=0, sensor_2_id=1, unit="ºC")
-        expected = [CalculatedData(config_calculate, value=23.1, status="OK")]
-        expected_oor = [CalculatedData(config_calculate, value=None, status="ERROR")]
+        config_calculate = SettingsCalculate(id=1000, type="DEW", sensor_1_id=0, sensor_2_id=1, unit="ºC")
+        expected = {1000: CalculatedData(config_calculate, value=23.1, status="OK")}
+        expected_oor = {1000: CalculatedData(config_calculate, value=None, status="ERROR")}
 
         test_cases = [
             (
@@ -181,21 +241,24 @@ class TestSensorsProcessing(unittest.TestCase):
             )
         ]
 
-        sensor_config_repository = Mock(spec=SensorsConfigRepository)
+        sensor_config_repository = Mock(spec=SensorsSettingsRepository)
         sensor_raw_data_repository = Mock(spec=SensorsRawDataRepository)
-        calculated_data_repository = Mock(spec=CalculatedConfigRepository)
+        calculated_data_repository = Mock(spec=CalculatedSettingsRepository)
 
         service = SensorsProcessingService(
+            sensor_specs_repository=self.sensor_specs_repository,
             sensor_config_repository=sensor_config_repository,
             sensor_raw_data_repository=sensor_raw_data_repository,
-            calculated_config_repo=calculated_data_repository
+            calculated_config_repo=calculated_data_repository,
+            sensor_factory=self.sensor_factory,
+            calculate_value_factory=self.calculate_value_factory,
         )
 
         for sensor_config, sensor_raw_data, config_calculated, expected, message in test_cases:
             # values returned by the repositories
-            sensor_config_repository.get_sensor_config.return_value = sensor_config
+            sensor_config_repository.get_sensor_settings.return_value = sensor_config
             sensor_raw_data_repository.get_sensor_raw_data.return_value = sensor_raw_data
-            calculated_data_repository.get_calculated_config.return_value = config_calculated
+            calculated_data_repository.get_calculated_settings.return_value = config_calculated
 
             processed_sensor_data = service.process_sensor_data()
             actual = service.get_calculated_data(processed_sensor_data)

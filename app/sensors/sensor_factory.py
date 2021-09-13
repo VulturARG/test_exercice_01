@@ -1,19 +1,22 @@
 from inspect import getmembers, isclass, isabstract
-import app.sensors as sensors_package
+from typing import Dict, Type
 
-from app.sensors_procesing import RawSensorData, TypeSensorNotFoundError
+import app.sensors as sensors_package
+from app.sensors import Sensor
+
+from app.sensors_procesing import RawSensorData, TypeSensorNotFoundError, SensorSpecs
 
 
 class SensorFactory:
-    """Get an instance of the right class."""
+    """Get an instance of Sensor's child class."""
 
-    sensors = {}  # key = sensor type, Value = class for the sensor
+    _sensors: Dict[str, Type[Sensor]] = {}  # key = sensor type
 
     def __init__(self):
         self._load_sensors()
 
     def _load_sensors(self) -> None:
-        """Populate the sensors dictionary with classes of sensors package"""
+        """Populate the _sensors dictionary with classes of sensors package"""
 
         classes = getmembers(
             sensors_package,
@@ -21,13 +24,15 @@ class SensorFactory:
         )
         for name, _type in classes:
             if isclass(_type) and issubclass(_type, sensors_package.Sensor):
-                self.sensors.update([[name, _type]])
+                self._sensors.update([[name, _type]])
 
-    def create_instance(self, raw_data: RawSensorData) -> sensors:
+    def create_instance(
+            self, raw_data: RawSensorData, sensor_specs: SensorSpecs
+    ) -> Sensor:
         """Create the solicited instance."""
 
         try:
-            return self.sensors[raw_data.type](raw_data)
+            return self._sensors[raw_data.type](raw_data, sensor_specs)
         except KeyError:
             raise TypeSensorNotFoundError
 
