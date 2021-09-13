@@ -1,10 +1,10 @@
 import enum
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Dict
 
 
 @dataclass(frozen=True)
-class ConfigSensor:
+class SettingsSensor:
     id: int
     type: str
 
@@ -27,7 +27,7 @@ class ProcessedSensorData:
 
 
 @dataclass(frozen=True)
-class ConfigCalculate:
+class SettingsCalculate:
     id: int
     type: str
     sensor_1_id: int
@@ -37,31 +37,34 @@ class ConfigCalculate:
 
 @dataclass(frozen=True)
 class ToCalculateRawData:
-    config: ConfigCalculate
+    settings: SettingsCalculate
     sensor_1_value: Optional[float]
     sensor_2_value: Optional[float]
 
 
 @dataclass(frozen=True)
 class CalculatedData:
-    config: ConfigCalculate
+    settings: SettingsCalculate
     value: Optional[float]
     status: str
 
 
+@dataclass(frozen=True)
+class RawSensorSpecs:
+    type: str
+    min: int
+    max: int
+    unit: str
+    description: str
+
+
+@dataclass(frozen=True)
+class SensorSpecs:
+    specs: Dict[str, RawSensorSpecs]
+
+
 class SensorSource(enum.Enum):
     SOURCE = "https://my-json-server.typicode.com/VulturARG/test_exercice_01"
-
-
-class SensorSpecs(enum.Enum):
-    TYPE = {
-        "DBT": {"min": -40, "max": 70, "unit": "ºC"},
-        "WBT": {"min": -40, "max": 70, "unit": "ºC"},
-        "HUM": {"min": 0, "max": 100, "unit": "%"},
-        "PRE": {"min": 300, "max": 1100, "unit": "hPa"},
-        "WiV": {"min": 0, "max": 250, "unit": "kmh"},
-        "WiD": {"min": 0, "max": 359, "unit": "º"}
-    }
 
 
 class TypeSensorNotFoundError(Exception):
