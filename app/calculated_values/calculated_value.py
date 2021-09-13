@@ -10,7 +10,7 @@ class CalculateValue(ABC):
     """Calculate values from sensor data."""
 
     def __init__(self, to_calculate_raw_data: ToCalculateRawData) -> None:
-        self._to_calculate_raw_data = to_calculate_raw_data
+        self._data = to_calculate_raw_data
 
     @abstractmethod
     def get_calculated_value(self) -> CalculatedData:

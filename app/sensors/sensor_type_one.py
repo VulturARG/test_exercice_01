@@ -8,9 +8,8 @@ from app.sensors_procesing import ProcessedSensorData, RawSensorData, SensorSpec
 class SensorTypeOne(Sensor):
     """Family sensor type one."""
 
-    def __init__(self, raw_data: RawSensorData):
-        super().__init__(raw_data)
-        self._raw_data = raw_data
+    def __init__(self, raw_data: RawSensorData, sensor_specs: SensorSpecs) -> None:
+        super().__init__(raw_data, sensor_specs)
 
     def get_processed_data(self) -> ProcessedSensorData:
         """Get the data processed from raw data."""
@@ -21,7 +20,7 @@ class SensorTypeOne(Sensor):
             id=self._raw_data.id,
             type=type_sensor,
             value=value,
-            unit=SensorSpecs.TYPE.value[type_sensor]["unit"],
+            unit=self._sensor_specs.specs[type_sensor].unit,
             status=status
         )
 
@@ -65,8 +64,8 @@ class SensorTypeOne(Sensor):
     def _is_value_out_of_range(self, type_sensor: str, value: float) -> None:
         """Check if the value is within the manufacturer's specifications."""
 
-        minimum = SensorSpecs.TYPE.value[type_sensor]["min"]
-        maximum = SensorSpecs.TYPE.value[type_sensor]["max"]
+        minimum = self._sensor_specs.specs[type_sensor].min
+        maximum = self._sensor_specs.specs[type_sensor].max
         sensor_in_range = minimum <= value <= maximum
         if not sensor_in_range:
             raise SensorValueOutOfRange

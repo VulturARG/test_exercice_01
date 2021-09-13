@@ -7,8 +7,9 @@ from app.sensors_procesing import ProcessedSensorData, RawSensorData, SensorSpec
 class Sensor(ABC):
     """Generic sensor"""
 
-    def __init__(self, raw_data: RawSensorData) -> None:
+    def __init__(self, raw_data: RawSensorData, sensor_specs: SensorSpecs) -> None:
         self._raw_data = raw_data
+        self._sensor_specs = sensor_specs
 
     @abstractmethod
     def _get_value(self) -> Optional[float]:
