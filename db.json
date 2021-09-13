@@ -13,50 +13,10 @@
   },
   "6": {
     "first": 1,
-    "second": 8
+    "second": 825
   },
   "7": {
-    "first": 68,
-    "second": 115
-  },
-  "10": {
-    "first": 4,
-    "second": 326
-  },
-  "11": {
-    "first": 2,
-    "second": 202
-  },
-  "13": {
-    "first": 35,
-    "second": 24
-  },
-  "14": {
-    "first": 256,
-    "second": 8
-  },
-  "15": {
-    "first": 68,
-    "second": 115
-  },
-  "20": {
     "first": 255,
     "second": 255
-  },
-  "21": {
-    "first": 3,
-    "second": 102
-  },
-  "22": {
-    "first": 238,
-    "second": 255
-  },
-  "28": {
-    "first": 1,
-    "second": 18
-  },
-  "29": {
-    "first": 68,
-    "second": 105
   }
 }

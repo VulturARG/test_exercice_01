@@ -14,6 +14,8 @@ Initially the available sensors will be 6, whose technical characteristics are d
 
 ![img.png](img.png)
 
+W_V and W_D was change to WiV and WiD
+
 ## Problems
 
 Imagine that you are writing a device admin tool. Please complete the following tasks. Use the database schema and API documentation as a reference.
@@ -54,7 +56,7 @@ The call must be using the base http address plus the number of sensor that you'
 
 ##### Example sensor id: 0: https://my-json-server.typicode.com/VulturARG/test_exercice_01/0
 
-### Sensors
+### Sensor
 
 * first (0 to 255 integer)
 * second (0 to 255 integer)
@@ -84,17 +86,17 @@ Example 1. Temp = 26ºC:
 * `sensor_data = 1 * 256 + 4`
 * `sensor_data = 260 = 26ºC`
 
-Example 2. Temp = -5ºC:
+Example 2. Temp = -5.4ºC:
 * `first = 4`
-* `second = 26`
-* `sensor_data = 4 * 256 + 26`
-* `sensor_data = 1050 = -5ºC`
+* `second = 30`
+* `sensor_data = 4 * 256 + 30`
+* `sensor_data = 1054 = -5.4ºC`
 
-Example 3. Humidity = 84%:
+Example 3. Humidity = 84.3%:
 * `first = 3`
-* `second = 72`
-* `sensor_data = 3 * 256 + 72`
-* `sensor_data = 840 = 84%`
+* `second = 75`
+* `sensor_data = 3 * 256 + 75`
+* `sensor_data = 840 = 84.3%`
 
 Example 4. Pressure = 970.7 hPa:
 * `first = 37`
@@ -123,6 +125,10 @@ Where:
 * H is humidity in %.
 * T is temperature in celsius degree.
 * Dew point unit is `ºC`
+
+Example 1. Temp = 26ºC, Humidity = 84.3%:
+* `Dew point = 23.1273708641822`
+* `Round dew point = 23.1`
 
 ### Output examples
 
