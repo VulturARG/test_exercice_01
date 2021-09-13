@@ -6,10 +6,8 @@ from app.sensors.sensor_factory import SensorFactory
 from app.sensors_procesing import (
     SettingsSensor,
     RawSensorData,
-    ProcessedSensorData,
     TypeSensorNotFoundError,
     SettingsCalculate,
-    CalculatedData,
     SensorSpecs,
     RawSensorSpecs,
 )
@@ -122,36 +120,18 @@ class TestSensorsProcessing(unittest.TestCase):
         )
 
     def test_sensor_input(self):
-        expected_pos = {
-            0: ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK")
-        }
-        expected_neg = {
-            0: ProcessedSensorData(id=0, type="DBT", value=-5.4, unit="ºC", status="OK")
-        }
-        expected_se = {
-            0: ProcessedSensorData(id=0, type="DBT", value=None, unit="ºC", status="SE")
-        }
-        expected_hum = {
-            1: ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")
-        }
-        expected_hum2 = {
-            1: ProcessedSensorData(id=1, type="HUM", value=None, unit="%", status="OoR")
-        }
-        expected_pre = {
-            2: ProcessedSensorData(id=2, type="PRE", value=970.7, unit="hPa", status="OK")
-        }
-        expected_w_v = {
-            3: ProcessedSensorData(id=3, type="WiV", value=170.73, unit="kmh", status="OK")
-        }
-        expected_w_d = {
-            4: ProcessedSensorData(id=4, type="WiD", value=357, unit="º", status="OK")
-        }
-        expected_none = {
-            4: ProcessedSensorData(id=4, type="DBT", value=None, unit="ºC", status="SE")
-        }
+        expected_pos = {0: {"type": "DBT", "value": 26, "unit": "ºC", "status": "OK"}}
+        expected_neg = {0: {"type": "DBT", "value": -5.4, "unit": "ºC", "status": "OK"}}
+        expected_se = {0: {"type": "DBT", "value": None, "unit": "ºC", "status": "SE"}}
+        expected_hum = {1: {"type": "HUM", "value": 84.3, "unit": "%", "status": "OK"}}
+        expected_hum2 = {1: {"type": "HUM", "value": None, "unit": "%", "status": "OoR"}}
+        expected_pre = {2: {"type": "PRE", "value": 970.7, "unit": "hPa", "status": "OK"}}
+        expected_w_v = {3: {"type": "WiV", "value": 170.73, "unit": "kmh", "status": "OK"}}
+        expected_w_d = {4: {"type": "WiD", "value": 357, "unit": "º", "status": "OK"}}
+        expected_none = {4: {"type": "DBT", "value": None, "unit": "ºC", "status": "SE"}}
         expected_duo = {
-            0: ProcessedSensorData(id=0, type="DBT", value=26, unit="ºC", status="OK"),
-            1: ProcessedSensorData(id=1, type="HUM", value=84.3, unit="%", status="OK")
+            0: {"type": "DBT", "value": 26, "unit": "ºC", "status": "OK"},
+            1: {"type": "HUM", "value": 84.3, "unit": "%", "status": "OK"}
         }
 
         test_cases = [
@@ -220,9 +200,29 @@ class TestSensorsProcessing(unittest.TestCase):
             service.process_sensor_data()
 
     def test_calculated_value(self):
-        config_calculate = SettingsCalculate(id=1000, type="DEW", sensor_1_id=0, sensor_2_id=1, unit="ºC")
-        expected = {1000: CalculatedData(config_calculate, value=23.1, status="OK")}
-        expected_oor = {1000: CalculatedData(config_calculate, value=None, status="ERROR")}
+        config_calculate = SettingsCalculate(
+            id=1000, type="DEW", sensor_1_id=0, sensor_2_id=1, unit="ºC"
+        )
+        expected = {
+            1000: {
+                "type:":"DEW",
+                "sensor_1_id":0,
+                "sensor_2_id":1,
+                "value":23.1,
+                "unit":"ºC",
+                "status":"OK"
+            }
+        }
+        expected_oor = {
+            1000: {
+                "type:": "DEW",
+                "sensor_1_id": 0,
+                "sensor_2_id": 1,
+                "value": None,
+                "unit": "ºC",
+                "status": "ERROR"
+            }
+        }
 
         test_cases = [
             (

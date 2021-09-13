@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Dict
 
-from app.sensors_procesing import ProcessedSensorData, RawSensorData, SensorSpecs
+from app.sensors_procesing import RawSensorData, SensorSpecs
 
 
 class Sensor(ABC):
@@ -16,7 +16,7 @@ class Sensor(ABC):
         """Get sensor value from raw data."""
 
     @abstractmethod
-    def get_processed_data(self) -> ProcessedSensorData:
+    def get_processed_data(self) -> Dict:
         """Get the data processed from raw data."""
 
     @abstractmethod
@@ -30,5 +30,3 @@ class Sensor(ABC):
     @abstractmethod
     def _is_value_out_of_range(self, type_sensor: str, value: float) -> None:
         """Check if the value is within the manufacturer's specifications."""
-
-

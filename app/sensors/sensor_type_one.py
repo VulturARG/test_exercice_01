@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import Optional, Dict
 
 from app.sensors import Sensor
-from app.sensors_procesing import ProcessedSensorData, RawSensorData, SensorSpecs, \
+from app.sensors_procesing import RawSensorData, SensorSpecs, \
     SensorRawDataError, SensorValueOutOfRange
 
 
@@ -11,18 +11,19 @@ class SensorTypeOne(Sensor):
     def __init__(self, raw_data: RawSensorData, sensor_specs: SensorSpecs) -> None:
         super().__init__(raw_data, sensor_specs)
 
-    def get_processed_data(self) -> ProcessedSensorData:
+    def get_processed_data(self) -> Dict:
         """Get the data processed from raw data."""
 
         status, type_sensor, value = self._get_parameters()
 
-        return ProcessedSensorData(
-            id=self._raw_data.id,
-            type=type_sensor,
-            value=value,
-            unit=self._sensor_specs.specs[type_sensor].unit,
-            status=status
-        )
+        return {
+            self._raw_data.id: {
+                "type": type_sensor,
+                "value": value,
+                "unit": self._sensor_specs.specs[type_sensor].unit,
+                "status": status
+            }
+        }
 
     def _get_parameters(self):
         type_sensor = self._raw_data.type

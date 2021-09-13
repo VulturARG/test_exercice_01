@@ -18,15 +18,6 @@ class RawSensorData:
 
 
 @dataclass(frozen=True)
-class ProcessedSensorData:
-    id: int
-    type: str
-    value: Optional[float]
-    unit: str
-    status: str
-
-
-@dataclass(frozen=True)
 class SettingsCalculate:
     id: int
     type: str
@@ -40,13 +31,6 @@ class ToCalculateRawData:
     settings: SettingsCalculate
     sensor_1_value: Optional[float]
     sensor_2_value: Optional[float]
-
-
-@dataclass(frozen=True)
-class CalculatedData:
-    settings: SettingsCalculate
-    value: Optional[float]
-    status: str
 
 
 @dataclass(frozen=True)

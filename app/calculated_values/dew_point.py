@@ -1,6 +1,7 @@
+from typing import Dict
+
 from app.calculated_values import CalculateValue
 from app.sensors_procesing import (
-    CalculatedData,
     ToCalculateRawData
 )
 
@@ -11,7 +12,7 @@ class DEW(CalculateValue):
     def __init__(self, to_calculate_raw_data: ToCalculateRawData) -> None:
         super().__init__(to_calculate_raw_data)
 
-    def get_calculated_value(self) -> CalculatedData:
+    def get_calculated_value(self) -> Dict[int, Dict]:
         """Calculate value with data of sensors."""
 
         temperature = self._data.sensor_1_value
@@ -23,12 +24,5 @@ class DEW(CalculateValue):
             dew_point = None
             status = "ERROR"
 
-        return CalculatedData(
-            settings=self._data.settings,
-            value=dew_point,
-            status=status
-        )
-
-
-
+        return self._get_formatted_result(dew_point, status)
 
