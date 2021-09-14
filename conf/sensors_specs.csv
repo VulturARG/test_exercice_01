@@ -1,0 +1,7 @@
+"type","min","max","unit","description"
+"DBT",-40,70,"ºC","Dry Bulb Temperature"
+"WBT",-40,70,"ºC","Wet Bulb Temperature"
+"HUM",0,100,"%","Humidity"
+"PRE",300,1100,"hPa","Pressure"
+"WiV",0,250,"kmh","Wind Velocity"
+"WiD",0,359,"º","Wind Direction"
