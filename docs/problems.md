@@ -16,11 +16,11 @@ Initially the available sensors will be 6, whose technical characteristics are d
 
 W_V and W_D was change to WiV and WiD
 
-## Problems
+## Problems to solve
 
 Imagine that you are writing a device admin tool. Please complete the following tasks. Use the database schema and API documentation as a reference.
 
-The config file from device is en `conf/conf.csv`. The data of each sensor that is connected to the device is in `conf/sensors.csv` 
+The config file from device is en `conf/conf.csv`. The data of each sensor that is connected to the device is in `conf/sensors.csv`. The specs of each sensor type is in `sensors_specs.csv`.
 
 1. Create a script that will consume data from the HTTP API endpoints described below and output sensor data to **stdout** in [JSON Lines format](https://jsonlines.org/). NOTE: You are **not** expected to create your own server backend. Although the data is mocked, use the provided endpoints as though they serve real data.
 
